@@ -1,12 +1,17 @@
 import ArticleList from "./components/ArticleList";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import "./App.css";
+import ArticleDetail from "./components/ArticleDetail";
 
-function App() {
+const App = () => {
   return (
-    <div className="App">
-      <ArticleList />
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/articles" element={<ArticleList />} />
+        <Route path="/articles/:id" element={<ArticleDetail />} />
+      </Routes>
+    </BrowserRouter>
   );
-}
+};
 
 export default App;

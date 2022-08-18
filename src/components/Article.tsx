@@ -1,44 +1,38 @@
 import { ArticleType } from "../types/ArticleInterface";
-import axios from "axios";
 import { useEffect, useState } from "react";
 import { axiosInstance } from "../utils/axios-instance";
+
+import { FC } from "react";
 
 interface ArticleProps {
   data: ArticleType;
 }
 
-const Article = ({ data }: ArticleProps) => {
-  const [imageURL, setImageURL] = useState(null);
+const Article: FC<ArticleProps> = ({ data }) => {
+  const [imageURL, setImageURL] = useState<string>();
 
   const loadImage = async () => {
     const response = await axiosInstance.get(`images/${data.imageId}`);
-    // console.log(response.data);
 
     setImageURL(response.data);
-
-    // console.log(response.data);
-
-    // console.log(URL.createObjectURL(response.data));
   };
 
   useEffect(() => {
     loadImage();
   }, []);
 
-  console.log("image", imageURL);
-
   return (
     <div>
-      {imageURL && <img src={URL.createObjectURL(imageURL)} alt="" />}
+      {/* {imageURL && <img src={URL.createObjectURL(imageURL)} alt="" />} */}
 
-      <h2></h2>
+      <h2>{data.title}</h2>
       <div>
         <span></span>
         <span></span>
-        <span></span>
+        {/* <span>{data.createdAt}</span> */}
       </div>
-      <p></p>
-      <a href=""></a>
+      <p>{data.perex}</p>
+      <a href={`/articles/${data.articleId}`}>Read whole article</a>
       <span></span>
     </div>
   );

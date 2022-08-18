@@ -1,3 +1,5 @@
+import { CommentType } from "../types/CommentInterface";
+
 export interface ArticleType {
   articleId: string;
   createdAt: Date;
@@ -7,6 +9,13 @@ export interface ArticleType {
   title: string;
 }
 
-// export interface Articles {
-//   items: ArticleType;
-// }
+export interface ArticleDetailType {
+  articleId: string;
+  comments: CommentType[];
+  content: string;
+  createdAt: Date;
+  imageId: string;
+  lastUpdatedAt: Date;
+  perex: string;
+  title: string;
+}

@@ -1,32 +1,40 @@
 import Article from "./Article";
-import axios from "axios";
 import { useEffect, useState } from "react";
 import { axiosInstance } from "../utils/axios-instance";
 import { ArticleType } from "../types/ArticleInterface";
+import { FC } from "react";
+import { useQuery } from "react-query";
 
-function ArticleList() {
-  const [articles, setArticles] = useState<ArticleType[] | null | undefined>();
-  //   const [articles, setArticles] = useState(null);
+interface Articles {
+  items: ArticleType[];
+}
 
+const ArticleList = () => {
   const loadArticles = async () => {
-    // const response = await axiosInstance.get<Articles>("/articles");
-    const response = await axiosInstance.get("/articles");
-    console.log(response.data.items);
-    setArticles(response.data.items);
+    const response = await axiosInstance.get<Articles>("/articles");
+    return response.data;
   };
 
-  useEffect(() => {
-    loadArticles();
-  }, []);
+  const { data, isLoading, error, isSuccess } = useQuery<Articles, Error>(
+    "articles",
+    loadArticles
+  );
 
+  if (isLoading) {
+    return <p>Loading...</p>;
+  }
+
+  if (error) {
+    return <p>{error.message}</p>;
+  }
   return (
-    <section>
-      {articles &&
-        articles.map((article) => {
+    <div>
+      {data &&
+        data.items?.map((article) => {
           return <Article data={article} />;
         })}
-    </section>
+    </div>
   );
-}
+};
 
 export default ArticleList;
