@@ -5,44 +5,79 @@ import { axiosInstance } from "../utils/axios-instance";
 import { ArticleDetailType } from "../types/ArticleInterface";
 import { FC } from "react";
 import CommentList from "./CommentList";
+import { useQuery } from "react-query";
+import { TenantType } from "../types/TypeInterace";
+import Moment from "react-moment";
+import "../styles/article.scss";
 
 const ArticleDetail = () => {
-  const [article, setArticle] = useState<
-    ArticleDetailType | null | undefined
-  >();
-
   const { id } = useParams<string>();
 
   const loadArticle = async () => {
-    const response = await axiosInstance.get(`/articles/${id}`);
-
-    console.log(response.data);
-
-    setArticle(response.data);
+    const response = await axiosInstance.get<ArticleDetailType>(
+      `/articles/${id}`
+    );
+    return response.data;
   };
 
-  useEffect(() => {
-    loadArticle();
-  }, []);
+  const { data, error, isLoading, refetch } = useQuery<
+    ArticleDetailType,
+    Error
+  >("articleDetail", loadArticle);
+
+  // Load tenant name
+  const loadTenant = async () => {
+    const response = await axiosInstance.get<TenantType>(
+      `/tenants/f82f3833-b927-4104-9efe-042cfe93bb35`
+    );
+    console.log(response.data);
+    return response.data;
+  };
+
+  const { data: tenantData } = useQuery<TenantType>("tenant", loadTenant);
+
+  if (isLoading) {
+    return <p>Loading...</p>;
+  }
+
+  if (error) {
+    return <p>{error.message}</p>;
+  }
 
   return (
     <>
       <article>
-        {article && (
+        {data && (
           <>
-            <h1>{article.title}</h1>
+            <h1>{data.title}</h1>
+            <span>{tenantData?.name}</span>
             <p>
-              <span></span>
-              <span></span>
-              <span></span>
+              {" "}
+              <Moment format="MM/DD/YYYY">{data.createdAt.toString()}</Moment>
             </p>
-            <img src="" alt="" />
-            <p>{article.content}</p>
+            <div className="article__image"></div>
+            {/* <img src="" alt="" /> */}
+
+            <p>{data.content}</p>
           </>
         )}
       </article>
       <article>
-        {article && <CommentList comments={article.comments} />}
+        {data && (
+          <CommentList
+            comments={data.comments}
+            articleId={data.articleId}
+            author={tenantData?.name}
+            refetch={refetch}
+          />
+        )}
+        <button
+          onClick={() => {
+            refetch();
+          }}
+        >
+          Refetch
+        </button>
       </article>
     </>
   );

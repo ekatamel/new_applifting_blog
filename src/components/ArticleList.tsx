@@ -4,6 +4,7 @@ import { axiosInstance } from "../utils/axios-instance";
 import { ArticleType } from "../types/ArticleInterface";
 import { FC } from "react";
 import { useQuery } from "react-query";
+import "../styles/articlelist.scss";
 
 interface Articles {
   items: ArticleType[];
@@ -15,7 +16,7 @@ const ArticleList = () => {
     return response.data;
   };
 
-  const { data, isLoading, error, isSuccess } = useQuery<Articles, Error>(
+  const { data, isLoading, error } = useQuery<Articles, Error>(
     "articles",
     loadArticles
   );
@@ -28,10 +29,11 @@ const ArticleList = () => {
     return <p>{error.message}</p>;
   }
   return (
-    <div>
+    <div className="articles__container">
+      <h1>Recent articles</h1>
       {data &&
-        data.items?.map((article) => {
-          return <Article data={article} />;
+        data.items?.map((article, index) => {
+          return <Article key={index} article={article} />;
         })}
     </div>
   );

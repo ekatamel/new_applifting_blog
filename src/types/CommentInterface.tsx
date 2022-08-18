@@ -5,3 +5,9 @@ export interface CommentType {
   createdAt: string;
   score: number;
 }
+
+export interface CommentPostType {
+  articleId: string;
+  author: string;
+  content: string;
+}
