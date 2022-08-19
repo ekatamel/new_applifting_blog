@@ -8,6 +8,6 @@ export interface CommentType {
 
 export interface CommentPostType {
   articleId: string;
-  author: string;
+  author: string | undefined;
   content: string;
 }

@@ -6,35 +6,25 @@ import { ArticleDetailType } from "../types/ArticleInterface";
 import { FC } from "react";
 import CommentList from "./CommentList";
 import { useQuery } from "react-query";
-import { TenantType } from "../types/TypeInterace";
+import { TenantType } from "../types/TenantInterace";
 import Moment from "react-moment";
+import { Request } from "../utils/requests";
 import "../styles/article.scss";
 
-const ArticleDetail = () => {
+const ArticleDetail: FC = () => {
   const { id } = useParams<string>();
 
-  const loadArticle = async () => {
-    const response = await axiosInstance.get<ArticleDetailType>(
-      `/articles/${id}`
-    );
-    return response.data;
-  };
+  const request = new Request(id);
 
   const { data, error, isLoading, refetch } = useQuery<
     ArticleDetailType,
     Error
-  >("articleDetail", loadArticle);
+  >("articleDetail", request.loadArticle);
 
-  // Load tenant name
-  const loadTenant = async () => {
-    const response = await axiosInstance.get<TenantType>(
-      `/tenants/f82f3833-b927-4104-9efe-042cfe93bb35`
-    );
-    console.log(response.data);
-    return response.data;
-  };
-
-  const { data: tenantData } = useQuery<TenantType>("tenant", loadTenant);
+  const { data: tenantData } = useQuery<TenantType>(
+    "tenant",
+    request.loadTenant
+  );
 
   if (isLoading) {
     return <p>Loading...</p>;

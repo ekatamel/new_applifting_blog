@@ -2,9 +2,10 @@ import React, { useState } from "react";
 import "../styles/login.scss";
 import { useMutation } from "react-query";
 import axios from "axios";
-import { login } from "../utils/axios-instance";
+// import { login } from "../utils/axios-instance";
 import { LoginType } from "../types/LoginType";
 import { useNavigate } from "react-router-dom";
+import { Request } from "../utils/requests";
 
 export default function Login() {
   const [email, setEmail] = useState<string | null>(null);
@@ -12,15 +13,15 @@ export default function Login() {
 
   const nav = useNavigate();
 
+  const loginData: LoginType = {
+    username: email,
+    password: password,
+  };
+
+  const request = new Request(undefined, undefined, undefined, loginData);
+
   const { mutate, error } = useMutation(async () => {
-    const loginData: LoginType = {
-      username: email,
-      password: password,
-    };
-
-    const response = await login(loginData);
-
-    return response;
+    request.login();
   });
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {

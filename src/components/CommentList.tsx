@@ -5,6 +5,7 @@ import { CommentPostType } from "../types/CommentInterface";
 import { useMutation } from "react-query";
 import { axiosInstance } from "../utils/axios-instance";
 import { AxiosError } from "axios";
+import { Request } from "../utils/requests";
 
 interface Props {
   comments: CommentType[];
@@ -17,18 +18,16 @@ const CommentList: FC<Props> = ({ comments, articleId, author, refetch }) => {
   const [inputValue, setInputValue] = useState<string>("");
   const [contentError, setContentError] = useState(null);
 
-  const { mutate, data, error, isError } = useMutation<Response, AxiosError>(
-    async () => {
-      const comment = {
-        articleId: articleId,
-        author: author,
-        content: inputValue,
-      };
+  const comment = {
+    articleId: articleId,
+    author: author,
+    content: inputValue,
+  };
 
-      const response = await axiosInstance.post("/comments", comment);
+  const request = new Request(undefined, undefined, comment);
 
-      return response.data;
-    }
+  const { mutate, data, error } = useMutation<Response, AxiosError>(
+    request.postComment
   );
 
   const commentList = comments.map((comment, index) => {

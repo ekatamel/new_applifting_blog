@@ -5,6 +5,7 @@ import axios from "axios";
 import { useMutation, useQuery } from "react-query";
 import { axiosInstance } from "../utils/axios-instance";
 import { useState } from "react";
+import { Request } from "../utils/requests";
 
 interface Props {
   comment: CommentType;
@@ -13,27 +14,14 @@ interface Props {
 
 const Comment = ({ comment, refetch }: Props) => {
   const [score, setScore] = useState<number>(comment.score);
-  // const [scoreGiven, setScoreGiven] = useState<number>(0);
   const [doubleScoreError, setDoubleScoreError] = useState<string | null>(null);
 
+  const request = new Request(undefined, comment.commentId);
+
   // Handling votes up/down
-  const { mutate: mutateUp } = useMutation(async () => {
-    const response = await axiosInstance.post(
-      `/comments/${comment.commentId}/vote/up`
-    );
+  const { mutate: mutateUp } = useMutation(request.upVote);
 
-    console.log(response.data);
-
-    return response.data;
-  });
-
-  const { mutate: mutateDown } = useMutation(async () => {
-    const response = await axiosInstance.post(
-      `/comments/${comment.commentId}/vote/down`
-    );
-    refetch();
-    return response.data;
-  });
+  const { mutate: mutateDown } = useMutation(request.downVote);
 
   return (
     <section className="comment">

@@ -5,20 +5,18 @@ import { ArticleType } from "../types/ArticleInterface";
 import { FC } from "react";
 import { useQuery } from "react-query";
 import "../styles/articlelist.scss";
+import { Request } from "../utils/requests";
 
 interface Articles {
   items: ArticleType[];
 }
 
 const ArticleList = () => {
-  const loadArticles = async () => {
-    const response = await axiosInstance.get<Articles>("/articles");
-    return response.data;
-  };
+  const request = new Request();
 
   const { data, isLoading, error } = useQuery<Articles, Error>(
     "articles",
-    loadArticles
+    request.loadArticles
   );
 
   if (isLoading) {

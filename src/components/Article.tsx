@@ -1,10 +1,10 @@
-import { ArticleType } from "../types/ArticleInterface";
+import { ArticleType, ArticleDetailType } from "../types/ArticleInterface";
 import { useEffect, useState } from "react";
 import { axiosInstance } from "../utils/axios-instance";
 import { useQuery } from "react-query";
-import { ArticleDetailType } from "../types/ArticleInterface";
-import { TenantType } from "../types/TypeInterace";
+import { TenantType } from "../types/TenantInterace";
 import Moment from "react-moment";
+import { Request } from "../utils/requests";
 
 import { FC } from "react";
 
@@ -13,26 +13,9 @@ interface ArticleProps {
 }
 
 const Article: FC<ArticleProps> = ({ article }) => {
-  // const [imageURL, setImageURL] = useState<string>();
-
-  // const loadImage = async () => {
-  //   const response = await axiosInstance.get(`images/${data.imageId}`);
-
-  //   setImageURL(response.data);
-  // };
-
-  // useEffect(() => {
-  //   loadImage();
-  // }, []);
-
   // Load article comments
 
-  const loadArticleComments = async () => {
-    const response = await axiosInstance.get<ArticleDetailType>(
-      `/articles/${article.articleId}`
-    );
-    return response.data;
-  };
+  const request = new Request(article.articleId);
 
   const {
     data: articleData,
@@ -40,18 +23,13 @@ const Article: FC<ArticleProps> = ({ article }) => {
     isSuccess,
   } = useQuery<ArticleDetailType, Error>(
     `article${article.articleId}`,
-    loadArticleComments
+    request.loadArticleComments
   );
 
-  // Load tenant name
-  const loadTenant = async () => {
-    const response = await axiosInstance.get<TenantType>(
-      `/tenants/f82f3833-b927-4104-9efe-042cfe93bb35`
-    );
-    return response.data;
-  };
-
-  const { data: tenantData } = useQuery<TenantType>("tenant", loadTenant);
+  const { data: tenantData } = useQuery<TenantType>(
+    "tenant",
+    request.loadTenant
+  );
 
   if (isSuccess) {
     console.log(articleData);
@@ -64,10 +42,7 @@ const Article: FC<ArticleProps> = ({ article }) => {
       <div className="articles__content">
         <h2>{article.title}</h2>
         <span>{tenantData?.name}</span>
-        <span></span>
         <div>
-          <span></span>
-          <span></span>
           <Moment format="MM/DD/YYYY">{article.createdAt.toString()}</Moment>
         </div>
         <p>{article.perex}</p>
