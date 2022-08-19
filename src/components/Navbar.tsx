@@ -1,5 +1,5 @@
-import logo from "../img/logo.png";
-import "../styles/navbar.scss";
+import logo from '../img/logo.png';
+import '../styles/navbar.scss';
 
 function Navbar() {
   return (

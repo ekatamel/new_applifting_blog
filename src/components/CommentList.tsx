@@ -1,50 +1,42 @@
-import Comment from "./Comment";
-import { CommentType } from "../types/CommentInterface";
-import React, { FC, useState } from "react";
-import { CommentPostType } from "../types/CommentInterface";
-import { useMutation } from "react-query";
-import { axiosInstance } from "../utils/axios-instance";
-import { AxiosError } from "axios";
-import { Request } from "../utils/requests";
+import Comment from './Comment';
+import { CommentType } from '../types/CommentInterface';
+import React, { FC, useState } from 'react';
+import { useMutation, useQuery } from 'react-query';
+import { AxiosError } from 'axios';
+import { Request } from '../utils/requests';
 
 interface Props {
   comments: CommentType[];
   articleId: string;
   author: string | undefined;
-  refetch: () => {};
+  // refetch: () => void;
+  onClick: () => void;
 }
 
-const CommentList: FC<Props> = ({ comments, articleId, author, refetch }) => {
-  const [inputValue, setInputValue] = useState<string>("");
-  const [contentError, setContentError] = useState(null);
+const CommentList: FC<Props> = ({ comments, articleId, author, onClick }) => {
+  const [inputValue, setInputValue] = useState<string>('');
 
   const comment = {
     articleId: articleId,
     author: author,
-    content: inputValue,
+    content: inputValue
   };
 
-  const request = new Request(undefined, undefined, comment);
+  const request = new Request(articleId, undefined, comment);
 
-  const { mutate, data, error } = useMutation<Response, AxiosError>(
-    request.postComment
-  );
+  const { mutate, error } = useMutation<Response, AxiosError>(request.postComment);
 
   const commentList = comments.map((comment, index) => {
-    return <Comment key={index} comment={comment} refetch={refetch} />;
+    return <Comment key={index} comment={comment} articleId={articleId} />;
   });
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    mutate(undefined, {
-      onError: (err) => {
-        console.log("err", err.response?.data);
-      },
-    });
-
-    setInputValue("");
-    refetch();
+    mutate();
+    setInputValue('');
+    onClick();
+    // refetch();
+    // request.loadArticle();
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -62,8 +54,7 @@ const CommentList: FC<Props> = ({ comments, articleId, author, refetch }) => {
             action=""
             onSubmit={(e) => {
               handleSubmit(e);
-            }}
-          >
+            }}>
             <input
               type="text"
               name="content"

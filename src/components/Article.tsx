@@ -1,12 +1,10 @@
-import { ArticleType, ArticleDetailType } from "../types/ArticleInterface";
-import { useEffect, useState } from "react";
-import { axiosInstance } from "../utils/axios-instance";
-import { useQuery } from "react-query";
-import { TenantType } from "../types/TenantInterace";
-import Moment from "react-moment";
-import { Request } from "../utils/requests";
+import { ArticleType, ArticleDetailType } from '../types/ArticleInterface';
+import { useQuery } from 'react-query';
+import { TenantType } from '../types/TenantInterace';
+import Moment from 'react-moment';
+import { Request } from '../utils/requests';
 
-import { FC } from "react";
+import { FC } from 'react';
 
 interface ArticleProps {
   article: ArticleType;
@@ -17,23 +15,12 @@ const Article: FC<ArticleProps> = ({ article }) => {
 
   const request = new Request(article.articleId);
 
-  const {
-    data: articleData,
-    error,
-    isSuccess,
-  } = useQuery<ArticleDetailType, Error>(
+  const { data: articleData } = useQuery<ArticleDetailType, Error>(
     `article${article.articleId}`,
     request.loadArticleComments
   );
 
-  const { data: tenantData } = useQuery<TenantType>(
-    "tenant",
-    request.loadTenant
-  );
-
-  if (isSuccess) {
-    console.log(articleData);
-  }
+  const { data: tenantData } = useQuery<TenantType>('tenant', request.loadTenant);
 
   return (
     <div className="articles__box">
@@ -47,9 +34,7 @@ const Article: FC<ArticleProps> = ({ article }) => {
         </div>
         <p>{article.perex}</p>
         <a href={`/articles/${article.articleId}`}>Read whole article</a>
-        <span className="articles__comments">
-          {articleData?.comments.length} comments
-        </span>
+        <span className="articles__comments">{articleData?.comments.length} comments</span>
       </div>
     </div>
   );

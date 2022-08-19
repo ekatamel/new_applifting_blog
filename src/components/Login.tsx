@@ -1,11 +1,9 @@
-import React, { useState } from "react";
-import "../styles/login.scss";
-import { useMutation } from "react-query";
-import axios from "axios";
-// import { login } from "../utils/axios-instance";
-import { LoginType } from "../types/LoginType";
-import { useNavigate } from "react-router-dom";
-import { Request } from "../utils/requests";
+import React, { useState } from 'react';
+import '../styles/login.scss';
+import { useMutation } from 'react-query';
+import { LoginType } from '../types/LoginType';
+import { useNavigate } from 'react-router-dom';
+import { Request } from '../utils/requests';
 
 export default function Login() {
   const [email, setEmail] = useState<string | null>(null);
@@ -15,12 +13,12 @@ export default function Login() {
 
   const loginData: LoginType = {
     username: email,
-    password: password,
+    password: password
   };
 
   const request = new Request(undefined, undefined, undefined, loginData);
 
-  const { mutate, error } = useMutation(async () => {
+  const { mutate } = useMutation(async () => {
     request.login();
   });
 
@@ -29,7 +27,7 @@ export default function Login() {
 
     mutate();
 
-    nav("/articles");
+    nav('/articles');
   };
 
   return (
@@ -39,8 +37,7 @@ export default function Login() {
         action=""
         onSubmit={(e) => {
           handleSubmit(e);
-        }}
-      >
+        }}>
         <label htmlFor="email" className="login__label">
           Email/username
         </label>

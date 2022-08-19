@@ -1,4 +1,4 @@
-import { CommentType } from "../types/CommentInterface";
+import { CommentType } from '../types/CommentInterface';
 
 export interface ArticleType {
   articleId: string;

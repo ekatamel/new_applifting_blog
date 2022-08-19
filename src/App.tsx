@@ -1,9 +1,9 @@
-import ArticleList from "./components/ArticleList";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import "./App.css";
-import ArticleDetail from "./components/ArticleDetail";
-import Navbar from "./components/Navbar";
-import Login from "./components/Login";
+import ArticleList from './components/ArticleList';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import './App.css';
+import ArticleDetail from './components/ArticleDetail';
+import Navbar from './components/Navbar';
+import Login from './components/Login';
 
 const App = () => {
   return (

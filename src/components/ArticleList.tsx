@@ -1,11 +1,8 @@
-import Article from "./Article";
-import { useEffect, useState } from "react";
-import { axiosInstance } from "../utils/axios-instance";
-import { ArticleType } from "../types/ArticleInterface";
-import { FC } from "react";
-import { useQuery } from "react-query";
-import "../styles/articlelist.scss";
-import { Request } from "../utils/requests";
+import Article from './Article';
+import { ArticleType } from '../types/ArticleInterface';
+import { useQuery } from 'react-query';
+import '../styles/articlelist.scss';
+import { Request } from '../utils/requests';
 
 interface Articles {
   items: ArticleType[];
@@ -14,10 +11,7 @@ interface Articles {
 const ArticleList = () => {
   const request = new Request();
 
-  const { data, isLoading, error } = useQuery<Articles, Error>(
-    "articles",
-    request.loadArticles
-  );
+  const { data, isLoading, error } = useQuery<Articles, Error>('articles', request.loadArticles);
 
   if (isLoading) {
     return <p>Loading...</p>;
@@ -26,6 +20,10 @@ const ArticleList = () => {
   if (error) {
     return <p>{error.message}</p>;
   }
+
+  console.log(process.env.REACT_APP_XAPIKEY);
+  console.log(process.env.REACT_APP_AUTHORIZATION);
+
   return (
     <div className="articles__container">
       <h1>Recent articles</h1>
