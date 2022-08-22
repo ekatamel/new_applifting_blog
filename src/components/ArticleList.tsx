@@ -9,9 +9,7 @@ interface Articles {
 }
 
 const ArticleList = () => {
-  const request = new Request();
-
-  const { data, isLoading, error } = useQuery<Articles, Error>('articles', request.loadArticles);
+  const { data, isLoading, error } = useQuery<Articles, Error>('articles', Request.loadArticles);
 
   if (isLoading) {
     return <p>Loading...</p>;

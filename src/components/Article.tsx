@@ -13,14 +13,16 @@ interface ArticleProps {
 const Article: FC<ArticleProps> = ({ article }) => {
   // Load article comments
 
-  const request = new Request(article.articleId);
+  const loadComments = () => {
+    return Request.loadArticleComments(article.articleId);
+  };
 
   const { data: articleData } = useQuery<ArticleDetailType, Error>(
     `article${article.articleId}`,
-    request.loadArticleComments
+    loadComments
   );
 
-  const { data: tenantData } = useQuery<TenantType>('tenant', request.loadTenant);
+  const { data: tenantData } = useQuery<TenantType>('tenant', Request.loadTenant);
 
   return (
     <div className="articles__box">

@@ -4,16 +4,15 @@ import React, { FC, useState } from 'react';
 import { useMutation, useQuery } from 'react-query';
 import { AxiosError } from 'axios';
 import { Request } from '../utils/requests';
+import { ArticleDetailType } from '../types/ArticleInterface';
 
 interface Props {
   comments: CommentType[];
   articleId: string;
   author: string | undefined;
-  // refetch: () => void;
-  onClick: () => void;
 }
 
-const CommentList: FC<Props> = ({ comments, articleId, author, onClick }) => {
+const CommentList: FC<Props> = ({ comments, articleId, author }) => {
   const [inputValue, setInputValue] = useState<string>('');
 
   const comment = {
@@ -22,22 +21,34 @@ const CommentList: FC<Props> = ({ comments, articleId, author, onClick }) => {
     content: inputValue
   };
 
-  const request = new Request(articleId, undefined, comment);
+  const {
+    data: newComments,
+    isLoading,
+    refetch: refetchComments
+  } = useQuery<ArticleDetailType, Error>(
+    'articleDetail',
+    () => {
+      return Request.loadArticle(articleId);
+    },
+    {
+      enabled: false
+    }
+  );
 
-  const { mutate, error } = useMutation<Response, AxiosError>(request.postComment);
+  const { mutate, error } = useMutation<Response, AxiosError>(
+    () => {
+      return Request.postComment(comment);
+    },
+    {
+      onSuccess() {
+        refetchComments();
+      }
+    }
+  );
 
   const commentList = comments.map((comment, index) => {
     return <Comment key={index} comment={comment} articleId={articleId} />;
   });
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    mutate();
-    setInputValue('');
-    onClick();
-    // refetch();
-    // request.loadArticle();
-  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);
@@ -53,7 +64,9 @@ const CommentList: FC<Props> = ({ comments, articleId, author, onClick }) => {
           <form
             action=""
             onSubmit={(e) => {
-              handleSubmit(e);
+              e.preventDefault();
+              mutate();
+              setInputValue('');
             }}>
             <input
               type="text"
@@ -65,7 +78,14 @@ const CommentList: FC<Props> = ({ comments, articleId, author, onClick }) => {
               value={inputValue}
             />
           </form>
-          {error && <p>Error happenned</p>}
+          {error && <p>Error happened</p>}
+          <button
+            onClick={() => {
+              refetchComments();
+              console.log(newComments);
+            }}>
+            Refetch
+          </button>
         </div>
       </section>
 

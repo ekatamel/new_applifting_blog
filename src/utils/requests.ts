@@ -10,68 +10,52 @@ interface Articles {
 }
 
 export class Request {
-  articleId: string | undefined;
-  commentId: string | undefined;
-  comment: CommentPostType | undefined;
-  loginData: LoginType | undefined;
-
-  constructor(
-    articleId?: string | undefined,
-    commentId?: string | undefined,
-    comment?: CommentPostType | undefined,
-    loginData?: LoginType | undefined
-  ) {
-    this.articleId = articleId;
-    this.commentId = commentId;
-    this.comment = comment;
-    this.loginData = loginData;
-  }
-
-  loadArticleComments = async () => {
-    const response = await axiosInstance.get<ArticleDetailType>(`/articles/${this.articleId}`);
+  static loadArticleComments = async (articleId: string) => {
+    const response = await axiosInstance.get<ArticleDetailType>(`/articles/${articleId}`);
     return response.data;
   };
 
-  loadTenant = async () => {
+  static loadTenant = async () => {
     const response = await axiosInstance.get<TenantType>(
       `/tenants/f82f3833-b927-4104-9efe-042cfe93bb35`
     );
     return response.data;
   };
 
-  loadArticle = async () => {
-    const response = await axiosInstance.get<ArticleDetailType>(`/articles/${this.articleId}`);
+  static loadArticle = async (articleId: string | undefined) => {
+    const response = await axiosInstance.get<ArticleDetailType>(`/articles/${articleId}`);
     return response.data;
   };
 
-  loadArticles = async () => {
+  // Static
+  static loadArticles = async () => {
     const response = await axiosInstance.get<Articles>('/articles');
     return response.data;
   };
 
-  upVote = async () => {
-    const response = await axiosInstance.post(`/comments/${this.commentId}/vote/up`);
+  static upVote = async (commentId: string) => {
+    const response = await axiosInstance.post(`/comments/${commentId}/vote/up`);
 
     return response.data;
   };
 
-  downVote = async () => {
-    const response = await axiosInstance.post(`/comments/${this.commentId}/vote/down`);
+  static downVote = async (commentId: string) => {
+    const response = await axiosInstance.post(`/comments/${commentId}/vote/down`);
 
     return response.data;
   };
 
-  postComment = async () => {
-    const response = await axiosInstance.post('/comments', this.comment);
+  static postComment = async (comment: CommentPostType) => {
+    const response = await axiosInstance.post('/comments', comment);
 
     return response.data;
   };
 
-  login = async () => {
+  static login = async (loginData: LoginType) => {
     try {
       const response = await axios.post(
         'https://fullstack.exercise.applifting.cz/login',
-        this.loginData,
+        loginData,
         {
           headers: {
             'X-API-KEY': 'f877476b-86eb-4fa9-8431-057f8576384c'

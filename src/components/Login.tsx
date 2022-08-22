@@ -16,19 +16,9 @@ export default function Login() {
     password: password
   };
 
-  const request = new Request(undefined, undefined, undefined, loginData);
-
   const { mutate } = useMutation(async () => {
-    request.login();
+    Request.login(loginData);
   });
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    mutate();
-
-    nav('/articles');
-  };
 
   return (
     <section className="login">
@@ -36,7 +26,9 @@ export default function Login() {
       <form
         action=""
         onSubmit={(e) => {
-          handleSubmit(e);
+          e.preventDefault();
+          mutate();
+          nav('/articles');
         }}>
         <label htmlFor="email" className="login__label">
           Email/username

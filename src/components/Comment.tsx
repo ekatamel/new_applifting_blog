@@ -4,6 +4,7 @@ import { AiOutlineUp, AiOutlineDown } from 'react-icons/ai';
 import { useMutation, useQuery } from 'react-query';
 import { useState } from 'react';
 import { Request } from '../utils/requests';
+import { ArticleDetailType } from '../types/ArticleInterface';
 
 interface Props {
   comment: CommentType;
@@ -11,23 +12,42 @@ interface Props {
 }
 
 const Comment = ({ comment, articleId }: Props) => {
-  const [score, setScore] = useState(comment.score);
   const [doubleScoreError, setDoubleScoreError] = useState<string | null>(null);
 
-  const request = new Request(articleId, comment.commentId);
+  const { refetch: refetchComments } = useQuery<ArticleDetailType, Error>(
+    'articleDetail',
+    () => {
+      return Request.loadArticle(articleId);
+    },
+    {
+      enabled: false
+    }
+  );
 
   // Handling votes up/down
-  const { mutate: upVote } = useMutation(request.upVote, {
-    onSuccess() {
-      console.log('Success');
+  const { mutate: upVote } = useMutation(
+    () => {
+      return Request.upVote(comment.commentId);
+    },
+    {
+      onSuccess() {
+        console.log('Success');
+        refetchComments();
+      }
     }
-  });
+  );
 
-  const { mutate: downVote } = useMutation(request.downVote, {
-    onSuccess() {
-      console.log('Success');
+  const { mutate: downVote } = useMutation(
+    () => {
+      return Request.downVote(comment.commentId);
+    },
+    {
+      onSuccess() {
+        console.log('Success');
+        refetchComments();
+      }
     }
-  });
+  );
 
   return (
     <section className="comment">
@@ -37,12 +57,11 @@ const Comment = ({ comment, articleId }: Props) => {
         <p>{comment.content}</p>
 
         <p>
-          {score > 0 ? `+${score}` : score}
+          {comment.score > 0 ? `+${comment.score}` : comment.score}
           <AiOutlineUp
             onClick={() => {
-              if (score === 0) {
+              if (comment.score === 0) {
                 upVote();
-                setScore(score + 1);
               } else {
                 setDoubleScoreError('You cannot vote twice');
               }
@@ -50,9 +69,8 @@ const Comment = ({ comment, articleId }: Props) => {
           />
           <AiOutlineDown
             onClick={() => {
-              if (score === 0) {
+              if (comment.score === 0) {
                 downVote();
-                setScore(score - 1);
               } else {
                 setDoubleScoreError('You cannot vote twice');
               }

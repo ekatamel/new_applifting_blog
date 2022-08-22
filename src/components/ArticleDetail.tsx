@@ -11,14 +11,11 @@ import '../styles/article.scss';
 const ArticleDetail: FC = () => {
   const { id } = useParams<string>();
 
-  const request = new Request(id);
+  const { data, error, isLoading } = useQuery<ArticleDetailType, Error>('articleDetail', () => {
+    return Request.loadArticle(id);
+  });
 
-  const { data, error, isLoading, refetch } = useQuery<ArticleDetailType, Error>(
-    'articleDetail',
-    request.loadArticle
-  );
-
-  const { data: tenantData } = useQuery<TenantType>('tenant', request.loadTenant);
+  const { data: tenantData } = useQuery<TenantType>('tenant', Request.loadTenant);
 
   if (isLoading) {
     return <p>Loading...</p>;
@@ -40,7 +37,6 @@ const ArticleDetail: FC = () => {
               <Moment format="MM/DD/YYYY">{data.createdAt.toString()}</Moment>
             </p>
             <div className="article__image"></div>
-            {/* <img src="" alt="" /> */}
 
             <p>{data.content}</p>
           </>
@@ -52,15 +48,8 @@ const ArticleDetail: FC = () => {
             comments={data.comments}
             articleId={data.articleId}
             author={tenantData?.name}
-            onClick={refetch}
           />
         )}
-        <button
-          onClick={() => {
-            refetch();
-          }}>
-          Refetch
-        </button>
       </article>
     </>
   );
