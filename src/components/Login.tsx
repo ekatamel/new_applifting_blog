@@ -4,10 +4,16 @@ import { useMutation } from 'react-query';
 import { LoginType } from '../types/LoginType';
 import { useNavigate } from 'react-router-dom';
 import { Request } from '../utils/requests';
+import { useContext } from 'react';
+import { UserContext } from '../utils/UserContext';
+import { UserContextInterface } from '../types/UserInterface';
 
 export default function Login() {
   const [email, setEmail] = useState<string | null>(null);
   const [password, setPassword] = useState<string | null>(null);
+  const { user, setUser } = useContext<UserContextInterface>(UserContext);
+
+  console.log(user);
 
   const nav = useNavigate();
 
@@ -16,9 +22,19 @@ export default function Login() {
     password: password
   };
 
-  const { mutate } = useMutation(async () => {
-    Request.login(loginData);
-  });
+  const { mutate, data } = useMutation(
+    async () => {
+      const response = await Request.login(loginData);
+      return response;
+    },
+    {
+      onSuccess() {
+        // console.log(data);
+        localStorage.setItem;
+        setUser({ auth: true });
+      }
+    }
+  );
 
   return (
     <section className="login">

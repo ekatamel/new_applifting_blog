@@ -13,7 +13,7 @@ interface Props {
 }
 
 const CommentList: FC<Props> = ({ comments, articleId, author }) => {
-  const [inputValue, setInputValue] = useState<string>('');
+  const [inputValue, setInputValue] = useState('');
 
   const comment = {
     articleId: articleId,
@@ -72,9 +72,7 @@ const CommentList: FC<Props> = ({ comments, articleId, author }) => {
               type="text"
               name="content"
               placeholder="Enter your comment"
-              onChange={(e) => {
-                handleChange(e);
-              }}
+              onChange={handleChange}
               value={inputValue}
             />
           </form>

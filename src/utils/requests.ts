@@ -1,9 +1,15 @@
 import { axiosInstance } from './axios-instance';
-import axios from 'axios';
-import { ArticleDetailType, ArticleType } from '../types/ArticleInterface';
+import {
+  ArticleDetailType,
+  ArticleType,
+  NewArticleType,
+  EditArticleType
+} from '../types/ArticleInterface';
 import { TenantType } from '../types/TenantInterace';
 import { CommentPostType } from '../types/CommentInterface';
 import { LoginType } from '../types/LoginType';
+import { ImageInterface } from '../types/ImageInterface';
+import axios from 'axios';
 
 interface Articles {
   items: ArticleType[];
@@ -52,24 +58,48 @@ export class Request {
   };
 
   static login = async (loginData: LoginType) => {
-    try {
-      const response = await axios.post(
-        'https://fullstack.exercise.applifting.cz/login',
-        loginData,
-        {
-          headers: {
-            'X-API-KEY': 'f877476b-86eb-4fa9-8431-057f8576384c'
-          }
+    const response = await axiosInstance.post('/login', loginData);
+
+    return response.data;
+  };
+
+  static postArticle = async (articleData: NewArticleType) => {
+    const response = await axiosInstance.post('/articles', articleData);
+
+    return response.data;
+  };
+
+  static postImage = async (image: File | null) => {
+    const response = await axios.post(
+      'https://fullstack.exercise.applifting.cz/images',
+      { image: image },
+      {
+        headers: {
+          'X-API-KEY': '5c946f9a-b317-4dd2-a3f3-e188fe5ddb30',
+          Authorization: 'e6c7b2c3-30c3-47b3-a831-ce277841cda7',
+          'Content-Type': 'multipart/form-data'
         }
-      );
-
-      console.log(response);
-
-      return response;
-    } catch (e) {
-      if (e instanceof Error) {
-        return e.message;
       }
-    }
+    );
+
+    return response.data;
+  };
+
+  static deleteArticle = async (articleId: string) => {
+    const response = await axiosInstance.delete(`/articles/${articleId}`);
+
+    return response;
+  };
+
+  static updateArticle = async (articleData: EditArticleType | undefined) => {
+    const response = await axiosInstance.patch(`/articles/${articleData?.articleId}`, articleData);
+
+    return response;
+  };
+
+  static loadImage = async (imageId: string | undefined) => {
+    const response = await axiosInstance.get(`images/${imageId}`);
+
+    return response.data;
   };
 }

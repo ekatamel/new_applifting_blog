@@ -19,15 +19,24 @@ const ArticleList = () => {
     return <p>{error.message}</p>;
   }
 
-  console.log(process.env.REACT_APP_XAPIKEY);
-  console.log(process.env.REACT_APP_AUTHORIZATION);
+  let sortedArticles: any[] | null = null;
+
+  if (data) {
+    sortedArticles = data.items?.sort((a, b) => {
+      const dateA = Number(new Date(a.createdAt));
+      const dateB = Number(new Date(b.createdAt));
+
+      return dateB - dateA;
+    });
+  }
 
   return (
     <div className="articles__container">
       <h1>Recent articles</h1>
-      {data &&
-        data.items?.map((article, index) => {
-          return <Article key={index} article={article} />;
+
+      {sortedArticles &&
+        sortedArticles.map((article, i) => {
+          return <Article key={i} article={article} />;
         })}
     </div>
   );

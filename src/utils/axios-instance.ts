@@ -9,8 +9,8 @@ interface Params {
   };
 }
 
-const xapikey: string = process.env.REACT_APP_XAPIKEY ?? '';
-const Authorization: string = process.env.REACT_APP_AUTHORIZATION ?? '';
+const xapikey = process.env.REACT_APP_XAPIKEY ?? '';
+const Authorization = process.env.REACT_APP_AUTHORIZATION ?? '';
 
 export const axiosInstance = axios.create({
   baseURL: 'https://fullstack.exercise.applifting.cz',

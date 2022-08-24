@@ -1,0 +1,69 @@
+.myarticles {
+  &__table,
+  &__head,
+  &__data {
+    border: 1px solid lightgrey;
+    border-collapse: collapse;
+  }
+
+  &__table {
+    width: 80%;
+    margin: auto;
+    // table-layout: fixed;
+  }
+
+  &__head,
+  &__data {
+    padding: 1rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__button {
+    background-color: #007bff;
+    text-decoration: none;
+    color: white;
+    padding: 0.7rem;
+    border: none;
+    font-size: 1rem;
+  }
+
+  &__header {
+    display: flex;
+    width: 80%;
+    // margin: auto;
+    gap: 2rem;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+
+  &__form {
+    width: 50%;
+    margin: auto;
+  }
+
+  &__label {
+    display: block;
+    margin-bottom: 8px;
+  }
+
+  &__input {
+    margin-bottom: 1rem;
+    width: 100%;
+    border: 1px solid lightgray;
+    height: 2rem;
+  }
+
+  &__textarea {
+    height: 700px;
+  }
+
+  &__icon {
+    font-size: 1.5rem;
+    margin-left: 0.3rem;
+  }
+
+  &__image {
+    width: 112px;
+  }
+}

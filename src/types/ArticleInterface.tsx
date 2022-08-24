@@ -19,3 +19,18 @@ export interface ArticleDetailType {
   perex: string;
   title: string;
 }
+
+export interface NewArticleType {
+  title: string;
+  perex: string;
+  imageId: string;
+  content: string;
+}
+
+export interface EditArticleType {
+  articleId: string | undefined;
+  title: string;
+  perex: string;
+  imageId: string;
+  content: string;
+}

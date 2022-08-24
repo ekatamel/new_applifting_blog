@@ -1,7 +1,16 @@
 .article {
   &__image {
     width: 1000px;
-    height: 500px;
+    // height: 500px;
     background-color: lightgrey;
+  }
+
+  &__container {
+    display: flex;
+    gap: 3rem;
+  }
+
+  &__article {
+    width: 70%;
   }
 }
