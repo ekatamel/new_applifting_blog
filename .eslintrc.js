@@ -26,6 +26,7 @@ module.exports = {
   rules: {
     'react/react-in-jsx-scope': 'off',
     'no-console': 1,
-    'react/prop-types': 'off'
+    'react/prop-types': 'off',
+    'no-unused-labels': 'off'
   }
 };

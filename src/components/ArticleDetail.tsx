@@ -1,7 +1,6 @@
 import { useParams } from 'react-router-dom';
 import { ArticleDetailType } from '../types/ArticleInterface';
 import { FC } from 'react';
-import { useState } from 'react';
 import CommentList from './CommentList';
 import { useQuery } from 'react-query';
 import { TenantType } from '../types/TenantInterace';
@@ -20,8 +19,6 @@ const ArticleDetail: FC = () => {
   });
 
   const { data: tenantData } = useQuery<TenantType>('tenant', Request.loadTenant);
-
-  console.log(data);
 
   if (isLoading) {
     return <p>Loading...</p>;

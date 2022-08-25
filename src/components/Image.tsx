@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import { useQuery } from 'react-query';
+import { Request } from '../utils/requests';
 
 interface Props {
   imageId?: string;
@@ -11,25 +13,27 @@ const Image = ({ imageId, width, height }: Props) => {
 
   const [imgUrl, setImgUrl] = useState<string | ArrayBuffer | null>();
 
-  const getImg = async () => {
-    const response = await fetch(imageUrl, {
-      headers: {
-        'X-API-KEY': '5c946f9a-b317-4dd2-a3f3-e188fe5ddb30',
-        Authorization: 'e6c7b2c3-30c3-47b3-a831-ce277841cda7'
+  const { data } = useQuery(
+    `image${imageId}`,
+    async () => {
+      return Request.loadImage(imageId);
+    },
+    {
+      onSuccess(data) {
+        const response: any = data;
+        const imageToBlob = async () => {
+          const imageBlob = await data.data;
+          const reader = new FileReader();
+          reader.readAsDataURL(imageBlob);
+          reader.onloadend = () => {
+            const base64data = reader.result;
+            setImgUrl(base64data);
+          };
+        };
+        imageToBlob();
       }
-    });
-    const imageBlob = await response.blob();
-    const reader = new FileReader();
-    reader.readAsDataURL(imageBlob);
-    reader.onloadend = () => {
-      const base64data = reader.result;
-      setImgUrl(base64data);
-    };
-  };
-
-  useEffect(() => {
-    getImg();
-  }, []);
+    }
+  );
 
   return (
     <div

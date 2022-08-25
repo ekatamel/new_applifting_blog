@@ -21,11 +21,7 @@ const CommentList: FC<Props> = ({ comments, articleId, author }) => {
     content: inputValue
   };
 
-  const {
-    data: newComments,
-    isLoading,
-    refetch: refetchComments
-  } = useQuery<ArticleDetailType, Error>(
+  const { refetch: refetchComments } = useQuery<ArticleDetailType, Error>(
     'articleDetail',
     () => {
       return Request.loadArticle(articleId);
@@ -46,8 +42,8 @@ const CommentList: FC<Props> = ({ comments, articleId, author }) => {
     }
   );
 
-  const commentList = comments.map((comment, index) => {
-    return <Comment key={index} comment={comment} articleId={articleId} />;
+  const commentList = comments.map((comment) => {
+    return <Comment key={comment.commentId} comment={comment} articleId={articleId} />;
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -60,7 +56,6 @@ const CommentList: FC<Props> = ({ comments, articleId, author }) => {
       <section className="comment">
         <div className="comment__image"></div>
         <div className="comment__content">
-          {/* <p className="comment__author">{comment.author}</p> */}
           <form
             action=""
             onSubmit={(e) => {
@@ -77,13 +72,6 @@ const CommentList: FC<Props> = ({ comments, articleId, author }) => {
             />
           </form>
           {error && <p>Error happened</p>}
-          <button
-            onClick={() => {
-              refetchComments();
-              console.log(newComments);
-            }}>
-            Refetch
-          </button>
         </div>
       </section>
 

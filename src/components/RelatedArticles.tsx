@@ -9,7 +9,7 @@ interface Articles {
 }
 
 const RelatedArticles = () => {
-  const { data, isLoading, error } = useQuery<Articles, Error>('articles', Request.loadArticles);
+  const { data } = useQuery<Articles, Error>('articles', Request.loadArticles);
 
   return (
     <article className="relatedarticle__container">

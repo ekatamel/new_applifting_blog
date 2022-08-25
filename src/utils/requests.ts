@@ -8,7 +8,6 @@ import {
 import { TenantType } from '../types/TenantInterace';
 import { CommentPostType } from '../types/CommentInterface';
 import { LoginType } from '../types/LoginType';
-import { ImageInterface } from '../types/ImageInterface';
 import axios from 'axios';
 
 interface Articles {
@@ -98,8 +97,9 @@ export class Request {
   };
 
   static loadImage = async (imageId: string | undefined) => {
-    const response = await axiosInstance.get(`images/${imageId}`);
-
-    return response.data;
+    const response = await axiosInstance.get(`images/${imageId}`, {
+      responseType: 'blob'
+    });
+    return response;
   };
 }

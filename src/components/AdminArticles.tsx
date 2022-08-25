@@ -21,12 +21,10 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(props,
 
 const AdminArticles = () => {
   const [open, setOpen] = useState(false);
-  const {
-    data,
-    isLoading,
-    error,
-    refetch: refreshArticles
-  } = useQuery<Articles, Error>('articles', Request.loadArticles);
+  const { data, refetch: refreshArticles } = useQuery<Articles, Error>(
+    'articles',
+    Request.loadArticles
+  );
   const { data: tenantData } = useQuery<TenantType>('tenant', Request.loadTenant);
 
   const { mutate: articleDelete } = useMutation(

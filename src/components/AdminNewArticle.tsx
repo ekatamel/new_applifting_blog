@@ -25,7 +25,7 @@ const AdminNewArticle = () => {
   const [image, setImage] = useState<File | null>(null);
 
   // Image preview handling;
-  const [fileDataURL, setFileDataURL] = useState(null);
+  const [fileDataURL, setFileDataURL] = useState<string | ArrayBuffer | null | undefined>(null);
 
   const {
     register,
@@ -41,6 +41,8 @@ const AdminNewArticle = () => {
   const { mutate: submitArticle, error: submitError } = useMutation(postArticle, {
     onSuccess() {
       setOpen(true);
+      setImage(null);
+      setFileDataURL(null);
 
       reset();
       setValue('');
@@ -51,13 +53,13 @@ const AdminNewArticle = () => {
   });
 
   useEffect(() => {
-    let fileReader: any,
-      isCancel = false;
+    let fileReader: FileReader;
+    let isCancel = false;
     if (image) {
       fileReader = new FileReader();
-      fileReader.onload = (e: any) => {
-        const { result } = e.target;
-        if (result && !isCancel) {
+      fileReader.onload = (e: ProgressEvent<FileReader>) => {
+        const result: string | ArrayBuffer | null | undefined = e.target?.result;
+        if (e.target && !isCancel) {
           setFileDataURL(result);
         }
       };
@@ -79,10 +81,8 @@ const AdminNewArticle = () => {
         onSubmit={handleSubmit(async (data) => {
           if (image) {
             const response = await Request.postImage(image);
-            console.log({ ...data, content: value, imageId: response[0].imageId });
             submitArticle({ ...data, content: value || '', imageId: response[0].imageId });
           } else {
-            console.log({ ...data, content: value });
             submitArticle({ ...data, content: value || '' });
           }
         })}>
@@ -128,7 +128,9 @@ const AdminNewArticle = () => {
           Featured image
         </label>
         {fileDataURL ? (
-          <p className="img-preview-wrapper">{<img src={fileDataURL} alt="preview" />}</p>
+          <p className="img-preview-wrapper">
+            {<img className="myarticles__image" src={fileDataURL.toString()} alt="preview" />}
+          </p>
         ) : null}
         <input
           className="myarticles__input"
@@ -137,8 +139,6 @@ const AdminNewArticle = () => {
           id="image"
           formEncType="multipart/form-data"
           onChange={(e) => {
-            const file = e.target.files?.[0];
-            console.log(e.target.files?.[0] || null);
             setImage(e.target.files?.[0] || null);
           }}
         />

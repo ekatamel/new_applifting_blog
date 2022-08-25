@@ -1,13 +1,4 @@
-import axios, { HeadersDefaults } from 'axios';
-import { LoginType } from '../types/LoginType';
-
-interface Params {
-  baseURL: string;
-  headers: {
-    'X-API-KEY': string;
-    Authorization: string;
-  };
-}
+import axios from 'axios';
 
 const xapikey = process.env.REACT_APP_XAPIKEY ?? '';
 const Authorization = process.env.REACT_APP_AUTHORIZATION ?? '';

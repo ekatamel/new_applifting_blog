@@ -1,4 +1,3 @@
-import React, { FC } from 'react';
 import { ArticleDetailType } from '../types/ArticleInterface';
 import { Request } from '../utils/requests';
 import { useQuery } from 'react-query';

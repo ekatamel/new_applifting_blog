@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import { useState } from 'react';
 import { useMutation, useQuery } from 'react-query';
 import { Request } from '../utils/requests';
@@ -23,13 +23,12 @@ const AdminEditArticle = () => {
   const [image, setImage] = useState<File | null>(null);
 
   // Image preview handling;
-  const [fileDataURL, setFileDataURL] = useState(null);
+  const [fileDataURL, setFileDataURL] = useState<string | ArrayBuffer | null | undefined>(null);
 
-  const { data, error, isLoading } = useQuery<ArticleDetailType, Error>(
+  const { data: articleData } = useQuery<ArticleDetailType, Error>(
     'articleDetail',
     () => {
-      const response = Request.loadArticle(id);
-      return response;
+      return Request.loadArticle(id);
     },
     {
       refetchOnWindowFocus: false,
@@ -42,15 +41,12 @@ const AdminEditArticle = () => {
   const {
     register,
     handleSubmit,
-    reset,
     formState: { errors }
   } = useForm<EditArticleType>();
 
   const { mutate: editArticle, error: submitError } = useMutation(
-    async (data: EditArticleType) => {
-      const response = await Request.updateArticle(data);
-      console.log(response);
-      return response;
+    (data: EditArticleType) => {
+      return Request.updateArticle(data);
     },
     {
       onSuccess() {
@@ -64,14 +60,39 @@ const AdminEditArticle = () => {
     }
   );
 
+  const { mutate: postImage } = useMutation(Request.postImage, {
+    onSuccess(data) {
+      if (image) {
+        editArticle({
+          ...articleData,
+          articleId: id,
+          content: value || '',
+          imageId: data[0].imageId
+        });
+      } else {
+        editArticle({
+          ...data,
+          articleId: id,
+          content: value || ''
+        });
+      }
+    }
+  });
+
+  const onSubmit = async () => {
+    if (image) {
+      postImage(image);
+    }
+  };
+
   useEffect(() => {
-    let fileReader: any,
-      isCancel = false;
+    let fileReader: FileReader;
+    let isCancel = false;
     if (image) {
       fileReader = new FileReader();
-      fileReader.onload = (e: any) => {
-        const { result } = e.target;
-        if (result && !isCancel) {
+      fileReader.onload = (e: ProgressEvent<FileReader>) => {
+        const result: string | ArrayBuffer | null | undefined = e.target?.result;
+        if (e.target && !isCancel) {
           setFileDataURL(result);
         }
       };
@@ -87,27 +108,7 @@ const AdminEditArticle = () => {
 
   return (
     <section>
-      <form
-        action=""
-        className="myarticles__form"
-        onSubmit={handleSubmit(async (data) => {
-          if (image) {
-            const response = await Request.postImage(image);
-
-            editArticle({
-              ...data,
-              articleId: id,
-              content: value || '',
-              imageId: response[0].imageId
-            });
-          } else {
-            editArticle({
-              ...data,
-              articleId: id,
-              content: value || ''
-            });
-          }
-        })}>
+      <form action="" className="myarticles__form" onSubmit={handleSubmit(onSubmit)}>
         <div className="myarticles__header">
           <h1>Create new article</h1>
           <input type="submit" className="myarticles__button" value="Publish Article" />
@@ -120,7 +121,7 @@ const AdminEditArticle = () => {
           className="myarticles__input"
           type="text"
           placeholder="My First Article"
-          defaultValue={data?.title}
+          defaultValue={articleData?.title}
           id="title"
           {...register('title', {
             required: 'Title is required.',
@@ -136,7 +137,7 @@ const AdminEditArticle = () => {
           className="myarticles__input"
           type="text"
           placeholder="My First Perex"
-          defaultValue={data?.perex}
+          defaultValue={articleData?.perex}
           id="perex"
           {...register('perex', {
             required: 'Perex is required.',
@@ -153,12 +154,11 @@ const AdminEditArticle = () => {
         </label>
         {fileDataURL ? (
           <p className="img-preview-wrapper">
-            {<img className="myarticles__image" src={fileDataURL} alt="preview" />}
+            {<img className="myarticles__image" src={fileDataURL.toString()} alt="preview" />}
           </p>
         ) : (
-          data && <Image imageId={data?.imageId} width="100px" height="100px" />
+          articleData && <Image imageId={articleData?.imageId} width="100px" height="100px" />
         )}
-        {/* // {data && <Image imageId={data?.imageId} width="100px" height="100px" />} */}
 
         <input
           className="myarticles__input"
@@ -167,7 +167,6 @@ const AdminEditArticle = () => {
           id="image"
           formEncType="multipart/form-data"
           onChange={(e) => {
-            console.log(e.target.files?.[0] || null);
             setImage(e.target.files?.[0] || null);
           }}
         />
@@ -185,32 +184,23 @@ const AdminEditArticle = () => {
               return;
             }
 
-            setOpen(false);
+            if (submitError) {
+              setOpenError(false);
+            } else {
+              setOpen(false);
+            }
           }}>
-          <Alert severity="success" sx={{ width: '100%' }}>
-            Your article was successfully published!
-          </Alert>
-        </Snackbar>
-        <>
-          {submitError && (
-            <Snackbar
-              anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-              open={openError}
-              autoHideDuration={2000}
-              onClose={(e, reason) => {
-                if (reason === 'clickaway') {
-                  return;
-                }
-
-                setOpenError(false);
-              }}>
-              <Alert severity="error" sx={{ width: '100%' }}>
-                Something went wrong. Please try again later
-              </Alert>
-            </Snackbar>
+          {submitError ? (
+            <Alert severity="error" sx={{ width: '100%' }}>
+              Something went wrong. Please try again later
+            </Alert>
+          ) : (
+            <Alert severity="success" sx={{ width: '100%' }}>
+              Your article was successfully published!
+            </Alert>
           )}
-          <Markdown value={value} setValue={setValue} />
-        </>
+        </Snackbar>
+        <Markdown value={value} setValue={setValue} />
       </form>
     </section>
   );

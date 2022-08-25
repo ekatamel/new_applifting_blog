@@ -13,8 +13,6 @@ export default function Login() {
   const [password, setPassword] = useState<string | null>(null);
   const { user, setUser } = useContext<UserContextInterface>(UserContext);
 
-  console.log(user);
-
   const nav = useNavigate();
 
   const loginData: LoginType = {
@@ -22,7 +20,7 @@ export default function Login() {
     password: password
   };
 
-  const { mutate, data } = useMutation(
+  const { mutate } = useMutation(
     async () => {
       const response = await Request.login(loginData);
       return response;
@@ -30,7 +28,7 @@ export default function Login() {
     {
       onSuccess() {
         // console.log(data);
-        localStorage.setItem;
+        // localStorage.setItem;
         setUser({ auth: true });
       }
     }

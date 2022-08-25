@@ -31,7 +31,6 @@ const Comment = ({ comment, articleId }: Props) => {
     },
     {
       onSuccess() {
-        console.log('Success');
         refetchComments();
       }
     }
@@ -43,7 +42,6 @@ const Comment = ({ comment, articleId }: Props) => {
     },
     {
       onSuccess() {
-        console.log('Success');
         refetchComments();
       }
     }

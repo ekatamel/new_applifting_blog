@@ -28,9 +28,9 @@ export interface NewArticleType {
 }
 
 export interface EditArticleType {
-  articleId: string | undefined;
-  title: string;
-  perex: string;
+  articleId?: string;
+  title?: string;
+  perex?: string;
   imageId: string;
   content: string;
 }

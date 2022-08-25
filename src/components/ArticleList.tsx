@@ -19,7 +19,7 @@ const ArticleList = () => {
     return <p>{error.message}</p>;
   }
 
-  let sortedArticles: any[] | null = null;
+  let sortedArticles: ArticleType[] | null = null;
 
   if (data) {
     sortedArticles = data.items?.sort((a, b) => {
@@ -33,7 +33,6 @@ const ArticleList = () => {
   return (
     <div className="articles__container">
       <h1>Recent articles</h1>
-
       {sortedArticles &&
         sortedArticles.map((article, i) => {
           return <Article key={i} article={article} />;
