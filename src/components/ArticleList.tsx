@@ -1,7 +1,6 @@
 import Article from './Article';
 import { ArticleType } from '../types/ArticleInterface';
 import { useQuery } from 'react-query';
-import '../styles/articlelist.scss';
 import { Request } from '../utils/requests';
 
 interface Articles {
@@ -12,7 +11,7 @@ const ArticleList = () => {
   const { data, isLoading, error } = useQuery<Articles, Error>('articles', Request.loadArticles);
 
   if (isLoading) {
-    return <p>Loading...</p>;
+    return <div className="loader">Loading...</div>;
   }
 
   if (error) {
@@ -31,8 +30,8 @@ const ArticleList = () => {
   }
 
   return (
-    <div className="articles__container">
-      <h1>Recent articles</h1>
+    <div className="w-10/12 mx-auto flex flex-col gap-y-8">
+      <h1 className="text-4xl text-black mt-16 mb-8">Recent articles</h1>
       {sortedArticles &&
         sortedArticles.map((article, i) => {
           return <Article key={i} article={article} />;

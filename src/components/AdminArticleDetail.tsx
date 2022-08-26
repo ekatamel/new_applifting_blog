@@ -11,7 +11,7 @@ const AdminArticleDetail = ({ articleId }: Props) => {
     return Request.loadArticleComments(articleId);
   });
 
-  return <td className="myarticles__data">{articleData?.comments.length}</td>;
+  return <td className="border-gray-200 border-b-2 w-40 p-2">{articleData?.comments.length}</td>;
 };
 
 export default AdminArticleDetail;

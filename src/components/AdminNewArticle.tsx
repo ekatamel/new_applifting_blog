@@ -6,6 +6,7 @@ import { useForm } from 'react-hook-form';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
 import Markdown from './Markdown';
+import { useNavigate } from 'react-router-dom';
 
 interface FormValuesType {
   title: string;
@@ -27,6 +28,8 @@ const AdminNewArticle = () => {
   // Image preview handling;
   const [fileDataURL, setFileDataURL] = useState<string | ArrayBuffer | null | undefined>(null);
 
+  const nav = useNavigate();
+
   const {
     register,
     handleSubmit,
@@ -38,14 +41,18 @@ const AdminNewArticle = () => {
     return Request.postArticle(data);
   };
 
-  const { mutate: submitArticle, error: submitError } = useMutation(postArticle, {
-    onSuccess() {
+  const {
+    mutate: submitArticle,
+    error: submitError,
+    data
+  } = useMutation(postArticle, {
+    onSuccess(data) {
       setOpen(true);
       setImage(null);
       setFileDataURL(null);
-
       reset();
       setValue('');
+      nav(`/myarticles/edit/${data.articleId}`);
     },
     onError() {
       setOpenError(true);
@@ -74,28 +81,33 @@ const AdminNewArticle = () => {
   }, [image]);
 
   return (
-    <section>
+    <section className="w-10/12 mx-auto mt-16">
       <form
         action=""
-        className="myarticles__form"
+        className="w-7/12"
         onSubmit={handleSubmit(async (data) => {
           if (image) {
             const response = await Request.postImage(image);
             submitArticle({ ...data, content: value || '', imageId: response[0].imageId });
+            // return <Redirect to="/" />
           } else {
             submitArticle({ ...data, content: value || '' });
           }
         })}>
-        <div className="myarticles__header">
-          <h1>Create new article</h1>
-          <input type="submit" className="myarticles__button" value="Publish Article" />
+        <div className="flex gap-8 mb-8">
+          <h1 className="text-4xl font-bold">Create new article</h1>
+          <input
+            type="submit"
+            className="bg-blue-500 text-white p-2 rounded"
+            value="Publish Article"
+          />
         </div>
 
-        <label className="myarticles__label" htmlFor="title">
+        <label className="block mb-2" htmlFor="title">
           Article Title
         </label>
         <input
-          className="myarticles__input"
+          className="border-2 border-gray-200 w-full mb-8 h-9 rounded-sm px-2"
           type="text"
           placeholder="My First Article"
           id="title"
@@ -106,11 +118,11 @@ const AdminNewArticle = () => {
         />
         <p>{errors.title?.message}</p>
 
-        <label className="myarticles__label" htmlFor="perex">
+        <label className="block mb-2" htmlFor="perex">
           Article Perex
         </label>
         <input
-          className="myarticles__input"
+          className="border-2 border-gray-200 w-full mb-8 h-9 rounded-sm px-2"
           type="text"
           placeholder="My First Perex"
           id="perex"
@@ -124,16 +136,17 @@ const AdminNewArticle = () => {
         <p>{errors.content?.message}</p>
 
         {/* Image upload */}
-        <label htmlFor="image" className="myarticles__label">
-          Featured image
-        </label>
+        <label className="block mb-2">Featured image</label>
         {fileDataURL ? (
-          <p className="img-preview-wrapper">
-            {<img className="myarticles__image" src={fileDataURL.toString()} alt="preview" />}
+          <p className="img-preview-wrapper mb-3">
+            {<img className="w-28" src={fileDataURL.toString()} alt="preview" />}
           </p>
         ) : null}
+        <label htmlFor="image" className="bg-gray-500 text-white p-2 rounded">
+          Upload an image
+        </label>
         <input
-          className="myarticles__input"
+          className="invisible mb-8"
           type="file"
           name="image"
           id="image"
@@ -143,7 +156,7 @@ const AdminNewArticle = () => {
           }}
         />
 
-        <label className="myarticles__label" htmlFor="content">
+        <label className="block mb-2" htmlFor="content">
           Content
         </label>
 

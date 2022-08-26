@@ -2,23 +2,27 @@ import React from 'react';
 import { useQuery } from 'react-query';
 import { ArticleType } from '../types/ArticleInterface';
 import { Request } from '../utils/requests';
-import '../styles/relatedarticle.scss';
 
 interface Articles {
   items: ArticleType[];
 }
 
 const RelatedArticles = () => {
-  const { data } = useQuery<Articles, Error>('articles', Request.loadArticles);
+  const { data, isLoading } = useQuery<Articles, Error>('articles', Request.loadArticles);
+
+  if (isLoading) {
+    return <div className="loader">Loading...</div>;
+  }
 
   return (
-    <article className="relatedarticle__container">
+    <article className="w-3/12">
+      <h2 className="text-2xl mt-16 mb-8 font-bold">Related articles</h2>
       {data &&
         data.items.map((article) => {
           return (
-            <section className="relatedarticle__article" key={article.articleId}>
-              <h3 className="relatedarticle__title">{article.title}</h3>
-              <p className="relatedarticle__perex">{article.perex}</p>
+            <section key={article.articleId}>
+              <h3 className="text-1xl font-bold">{article.title}</h3>
+              <p className="mt-2 mb-4">{article.perex}</p>
             </section>
           );
         })}

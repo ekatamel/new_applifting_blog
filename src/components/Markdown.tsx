@@ -7,8 +7,8 @@ interface Props {
 
 const Markdown = ({ value, setValue }: Props) => {
   return (
-    <div className="container" data-color-mode="light">
-      <MDEditor height={500} value={value} onChange={setValue} />
+    <div data-color-mode="light">
+      <MDEditor height={700} value={value} onChange={setValue} />
     </div>
   );
 };

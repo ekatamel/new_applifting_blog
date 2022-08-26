@@ -24,19 +24,28 @@ const Article: FC<ArticleProps> = ({ article }) => {
   const { data: tenantData } = useQuery<TenantType>('tenant', Request.loadTenant);
 
   return (
-    <div className="articles__box">
-      <div className="articles__imagebox">
-        {articleData && <Image imageId={articleData.imageId} width="272px" height="244px" />}
+    <div className="flex gap-7">
+      <div>
+        {articleData && (
+          <Image imageId={articleData.imageId} className="w-72 h-60 bg-cover bg-center" />
+        )}
       </div>
-      <div className="articles__content">
-        <h2>{article.title}</h2>
-        <span>{tenantData?.name}</span>
-        <div>
-          <Moment format="MM/DD/YYYY">{article.createdAt.toString()}</Moment>
+      <div className="w-4/12 flex flex-col justify-around">
+        <h2 className="text-2xl font-bold mb-4">{article.title}</h2>
+        <div className="flex gap-4">
+          <span className="text-gray-500">{tenantData?.name}</span>
+          <Moment className="text-gray-500" format="MM/DD/YYYY">
+            {article.createdAt.toString()}
+          </Moment>
         </div>
-        <p>{article.perex}</p>
-        <a href={`/articles/${article.articleId}`}>Read whole article</a>
-        <span className="articles__comments">{articleData?.comments.length} comments</span>
+
+        <p className="text-xl">{article.perex}</p>
+        <div className="flex gap-4">
+          <a className="text-blue-500" href={`/articles/${article.articleId}`}>
+            Read whole article
+          </a>
+          <span className="text-gray-500">{articleData?.comments.length} comments</span>
+        </div>
       </div>
     </div>
   );

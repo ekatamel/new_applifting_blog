@@ -13,7 +13,7 @@ const App = () => {
     <BrowserRouter>
       <Navbar />
       <Routes>
-        <Route path="/articles" element={<ArticleList />} />
+        <Route path="/" element={<ArticleList />} />
         <Route path="/articles/:id" element={<ArticleDetail />} />
         <Route path="/login" element={<Login />} />
         <Route path="/myarticles" element={<AdminArticles />} />

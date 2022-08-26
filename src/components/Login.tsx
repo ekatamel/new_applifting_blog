@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import '../styles/login.scss';
 import { useMutation } from 'react-query';
 import { LoginType } from '../types/LoginType';
 import { useNavigate } from 'react-router-dom';
@@ -27,16 +26,14 @@ export default function Login() {
     },
     {
       onSuccess() {
-        // console.log(data);
-        // localStorage.setItem;
         setUser({ auth: true });
       }
     }
   );
 
   return (
-    <section className="login">
-      <h1>Log In</h1>
+    <section className="mt-20 mx-auto w-96 p-8 h-90 shadow-2xl">
+      <h1 className="font-bold text-2xl mb-5">Log In</h1>
       <form
         action=""
         onSubmit={(e) => {
@@ -44,11 +41,11 @@ export default function Login() {
           mutate();
           nav('/articles');
         }}>
-        <label htmlFor="email" className="login__label">
-          Email/username
+        <label htmlFor="email" className="block mb-2">
+          Email
         </label>
         <input
-          className="login__input"
+          className="border-2 border-gray-200 w-full mb-4 h-9 rounded-sm px-2"
           type="text"
           placeholder="me@example.com"
           id="email"
@@ -57,19 +54,19 @@ export default function Login() {
             setEmail(e.target.value);
           }}
         />
-        <label htmlFor="password" className="login__label">
+        <label htmlFor="password" className="block mb-2">
           Password
         </label>
         <input
           type="password"
           id="password"
-          className="login__input"
+          className="border-2 border-gray-200 w-full mb-4 h-9 rounded-sm px-2"
           required
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
             setPassword(e.target.value);
           }}
         />
-        <button>Log In</button>
+        <button className="bg-blue-500 text-white p-2 rounded-sm ml-auto block mt-3">Log In</button>
       </form>
     </section>
   );

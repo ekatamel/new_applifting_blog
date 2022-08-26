@@ -51,24 +51,26 @@ const CommentList: FC<Props> = ({ comments, articleId, author }) => {
   };
 
   return (
-    <div className="comments">
-      <h2>Comments ({comments.length})</h2>
-      <section className="comment">
-        <div className="comment__image"></div>
-        <div className="comment__content">
+    <div className="flex flex-col gap-8">
+      <h2 className="text-2xl font-bold">Comments ({comments.length})</h2>
+      <section className="flex gap-8">
+        <div className="w-12 h-11 bg-green-600 rounded-full"></div>
+        <div className="w-full">
           <form
             action=""
             onSubmit={(e) => {
               e.preventDefault();
               mutate();
               setInputValue('');
-            }}>
+            }}
+            className="h-full flex items-center w-full">
             <input
               type="text"
               name="content"
               placeholder="Enter your comment"
               onChange={handleChange}
               value={inputValue}
+              className="border-solid border-2 border-grey-400 rounded h-5/6 w-full"
             />
           </form>
           {error && <p>Error happened</p>}

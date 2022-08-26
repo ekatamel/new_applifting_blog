@@ -1,5 +1,4 @@
 import { CommentType } from '../types/CommentInterface';
-import '../styles/comments.scss';
 import { AiOutlineUp, AiOutlineDown } from 'react-icons/ai';
 import { useMutation, useQuery } from 'react-query';
 import { useState } from 'react';
@@ -48,13 +47,13 @@ const Comment = ({ comment, articleId }: Props) => {
   );
 
   return (
-    <section className="comment">
-      <div className="comment__image"></div>
-      <div className="comment__content">
-        <p className="comment__author">{comment.author}</p>
+    <section className="flex gap-8">
+      <div className="w-12 h-11 bg-green-600 rounded-full"></div>
+      <div className="w-full">
+        <p className="font-bold">{comment.author}</p>
         <p>{comment.content}</p>
 
-        <p>
+        <p className="flex gap-2 items-center">
           {comment.score > 0 ? `+${comment.score}` : comment.score}
           <AiOutlineUp
             onClick={() => {

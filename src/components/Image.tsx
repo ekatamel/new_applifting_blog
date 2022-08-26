@@ -1,14 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useQuery } from 'react-query';
 import { Request } from '../utils/requests';
 
 interface Props {
   imageId?: string;
-  width: string;
-  height: string;
+  className?: string;
 }
 
-const Image = ({ imageId, width, height }: Props) => {
+const Image = ({ imageId, className }: Props) => {
   const imageUrl = `https://fullstack.exercise.applifting.cz/images/${imageId}`;
 
   const [imgUrl, setImgUrl] = useState<string | ArrayBuffer | null>();
@@ -36,14 +35,13 @@ const Image = ({ imageId, width, height }: Props) => {
   );
 
   return (
-    <div
-      style={{
-        backgroundImage: `url(${imgUrl})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center center',
-        width: width,
-        height: height
-      }}></div>
+    <>
+      <div
+        className={className}
+        style={{
+          backgroundImage: `url(${imgUrl})`
+        }}></div>
+    </>
   );
 };
 
