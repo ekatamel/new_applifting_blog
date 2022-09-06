@@ -59,4 +59,3 @@ jobs:
           username: ${{ secrets.USERNAME}}
           password: ${{ secrets.PASSWORD}}
           server-dir: ${{ secrets.SERVER_DIR}}
-          local-dir: ./public
