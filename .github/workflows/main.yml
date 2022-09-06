@@ -24,10 +24,20 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+
+      - name: Use Node.js 16.x
+        uses: actions/setup-node@v3
         with:
           node-version: 16
-      - run: npm ci
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Runs a TypeScript check
+      - name: Run TypeScript check
+        uses: icrawl/action-tsc@v1
 
       # Runs a single command using the runners shell
       - name: Run a one-line script
