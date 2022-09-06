@@ -24,6 +24,9 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with: node-version: 16
+      - run: npm ci
 
       # Runs a single command using the runners shell
       - name: Run a one-line script
@@ -34,3 +37,7 @@ jobs:
         run: |
           echo Add other actions to build,
           echo test, and deploy your project.
+
+      # Runs a build
+      - name: Run a build
+        run: npm run build
