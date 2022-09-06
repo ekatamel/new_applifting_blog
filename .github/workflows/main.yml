@@ -57,4 +57,4 @@ jobs:
           server: ${{ secrets.SERVER }}
           username: ${{ secrets.USERNAME}}
           password: ${{ secrets.PASSWORD}}
-          server_dir: ${{ secrets.SERVER_DIR}}
+          server-dir: ${{ secrets.SERVER_DIR}}
