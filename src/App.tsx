@@ -19,6 +19,7 @@ const App = () => {
         <Route path="/myarticles" element={<AdminArticles />} />
         <Route path="/myarticles/create-new" element={<AdminNewArticle />} />
         <Route path="/myarticles/edit/:id" element={<AdminEditArticle />} />
+        <Route path="/reducer" element={<Navbar />} />
       </Routes>
     </BrowserRouter>
   );

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useReducer } from 'react';
 import { useState } from 'react';
 import { useMutation, useQuery } from 'react-query';
 import { Request } from '../utils/requests';
@@ -9,6 +9,7 @@ import Markdown from './Markdown';
 import { useParams } from 'react-router-dom';
 import { ArticleDetailType, EditArticleType } from '../types/ArticleInterface';
 import Image from './Image';
+import { StateInterface, ActionInterface, ActionKindInterface } from '../types/ReducerInterface';
 
 const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -17,13 +18,27 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(props,
 const AdminEditArticle = () => {
   const { id } = useParams();
 
-  const [open, setOpen] = useState(false);
-  const [openError, setOpenError] = useState(false);
-  const [value, setValue] = useState<string | undefined>('Supports markdown. Yay!');
-  const [image, setImage] = useState<File | null>(null);
+  const reducer = (state: StateInterface, action: ActionInterface) => {
+    switch (action.type) {
+      case ActionKindInterface.toggleSuccessMessage:
+        return { ...state, open: !state.open };
+      case ActionKindInterface.toggleErrorMessage:
+        return { ...state, openError: !state.openError };
+      case ActionKindInterface.setImage:
+        return { ...state, image: action.payload };
+      case ActionKindInterface.setFileURL:
+        return { ...state, fileDataURL: action.payload };
+    }
+  };
 
-  // Image preview handling;
-  const [fileDataURL, setFileDataURL] = useState<string | ArrayBuffer | null | undefined>(null);
+  const [state, dispatch] = useReducer(reducer, {
+    open: false,
+    openError: false,
+    image: null,
+    fileDataURL: null
+  });
+
+  const [value, setValue] = useState<string | undefined>('Supports markdown. Yay!');
 
   const { data: articleData } = useQuery<ArticleDetailType, Error>(
     'articleDetail',
@@ -50,53 +65,30 @@ const AdminEditArticle = () => {
     },
     {
       onSuccess() {
-        setOpen(true);
-
-        // reset();
+        dispatch({ type: ActionKindInterface.toggleSuccessMessage });
       },
       onError() {
-        setOpenError(true);
+        dispatch({ type: ActionKindInterface.toggleErrorMessage });
       }
     }
   );
 
-  const { mutate: postImage } = useMutation(Request.postImage, {
-    onSuccess(data) {
-      if (image) {
-        editArticle({
-          ...articleData,
-          articleId: id,
-          content: value || '',
-          imageId: data[0].imageId
-        });
-      } else {
-        editArticle({
-          ...data,
-          articleId: id,
-          content: value || ''
-        });
-      }
-    }
-  });
-
-  const onSubmit = async () => {
-    if (image) {
-      postImage(image);
-    }
-  };
+  if (submitError) {
+    console.log(submitError);
+  }
 
   useEffect(() => {
     let fileReader: FileReader;
     let isCancel = false;
-    if (image) {
+    if (state.image) {
       fileReader = new FileReader();
       fileReader.onload = (e: ProgressEvent<FileReader>) => {
         const result: string | ArrayBuffer | null | undefined = e.target?.result;
         if (e.target && !isCancel) {
-          setFileDataURL(result);
+          dispatch({ type: ActionKindInterface.setFileURL, payload: result });
         }
       };
-      fileReader.readAsDataURL(image);
+      fileReader.readAsDataURL(state.image);
     }
     return () => {
       isCancel = true;
@@ -104,11 +96,30 @@ const AdminEditArticle = () => {
         fileReader.abort();
       }
     };
-  }, [image]);
+  }, [state.image]);
 
   return (
     <section className="w-10/12 mx-auto mt-16">
-      <form action="" className="w-7/12" onSubmit={handleSubmit(onSubmit)}>
+      <form
+        action=""
+        className="w-7/12"
+        onSubmit={handleSubmit(async (data) => {
+          if (state.image) {
+            const response = await Request.postImage(state.image);
+            editArticle({
+              ...data,
+              articleId: id,
+              content: value || '',
+              imageId: response[0].imageId
+            });
+          } else {
+            editArticle({
+              ...data,
+              articleId: id,
+              content: value || ''
+            });
+          }
+        })}>
         <div className="flex gap-8 mb-8">
           <h1 className="text-4xl font-bold">Edit article</h1>
           <input
@@ -154,9 +165,9 @@ const AdminEditArticle = () => {
 
         {/* Image upload */}
         <label className="block mb-2">Featured image</label>
-        {fileDataURL ? (
+        {state.fileDataURL ? (
           <p className="img-preview-wrapper">
-            {<img src={fileDataURL.toString()} alt="preview" />}
+            {<img src={state.fileDataURL.toString()} alt="preview" />}
           </p>
         ) : (
           articleData && (
@@ -175,7 +186,7 @@ const AdminEditArticle = () => {
           id="image"
           formEncType="multipart/form-data"
           onChange={(e) => {
-            setImage(e.target.files?.[0] || null);
+            dispatch({ type: ActionKindInterface.setImage, payload: e.target.files?.[0] || null });
           }}
         />
 
@@ -185,7 +196,7 @@ const AdminEditArticle = () => {
 
         <Snackbar
           anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-          open={open}
+          open={submitError ? state.openError : state.open}
           autoHideDuration={2000}
           onClose={(e, reason) => {
             if (reason === 'clickaway') {
@@ -193,9 +204,9 @@ const AdminEditArticle = () => {
             }
 
             if (submitError) {
-              setOpenError(false);
+              dispatch({ type: ActionKindInterface.toggleErrorMessage });
             } else {
-              setOpen(false);
+              dispatch({ type: ActionKindInterface.toggleSuccessMessage });
             }
           }}>
           {submitError ? (
@@ -208,7 +219,9 @@ const AdminEditArticle = () => {
             </Alert>
           )}
         </Snackbar>
-        <Markdown value={value} setValue={setValue} />
+        <>
+          <Markdown value={value} setValue={setValue} />
+        </>
       </form>
     </section>
   );

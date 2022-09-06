@@ -1,10 +1,11 @@
 import Comment from './Comment';
-import { CommentType } from '../types/CommentInterface';
+import { CommentType, CommentPostType } from '../types/CommentInterface';
 import React, { FC, useState } from 'react';
 import { useMutation, useQuery } from 'react-query';
 import { AxiosError } from 'axios';
 import { Request } from '../utils/requests';
 import { ArticleDetailType } from '../types/ArticleInterface';
+import { useForm } from 'react-hook-form';
 
 interface Props {
   comments: CommentType[];
@@ -13,13 +14,13 @@ interface Props {
 }
 
 const CommentList: FC<Props> = ({ comments, articleId, author }) => {
-  const [inputValue, setInputValue] = useState('');
-
-  const comment = {
-    articleId: articleId,
-    author: author,
-    content: inputValue
-  };
+  const {
+    register,
+    handleSubmit,
+    reset,
+    watch,
+    formState: { errors }
+  } = useForm<CommentPostType>();
 
   const { refetch: refetchComments } = useQuery<ArticleDetailType, Error>(
     'articleDetail',
@@ -31,9 +32,14 @@ const CommentList: FC<Props> = ({ comments, articleId, author }) => {
     }
   );
 
+  const onSubmit = (content: any) => {
+    mutate(content);
+  };
+
   const { mutate, error } = useMutation<Response, AxiosError>(
-    () => {
-      return Request.postComment(comment);
+    (content: any) => {
+      console.log({ articleId, author, content });
+      return Request.postComment({ articleId, author, ...content });
     },
     {
       onSuccess() {
@@ -46,10 +52,6 @@ const CommentList: FC<Props> = ({ comments, articleId, author }) => {
     return <Comment key={comment.commentId} comment={comment} articleId={articleId} />;
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValue(e.target.value);
-  };
-
   return (
     <div className="flex flex-col gap-8">
       <h2 className="text-2xl font-bold">Comments ({comments.length})</h2>
@@ -58,22 +60,20 @@ const CommentList: FC<Props> = ({ comments, articleId, author }) => {
         <div className="w-full">
           <form
             action=""
-            onSubmit={(e) => {
-              e.preventDefault();
-              mutate();
-              setInputValue('');
-            }}
+            onSubmit={handleSubmit(onSubmit)}
             className="h-full flex items-center w-full">
             <input
               type="text"
-              name="content"
+              {...register('content', {
+                required: true,
+                minLength: { value: 3, message: 'Minimum 3 characters' }
+              })}
               placeholder="Enter your comment"
-              onChange={handleChange}
-              value={inputValue}
               className="border-solid border-2 border-grey-400 rounded h-5/6 w-full"
             />
+            {errors.content && <p>{errors.content?.message}</p>}
           </form>
-          {error && <p>Error happened</p>}
+          {/* {error && <p>Error happened</p>} */}
         </div>
       </section>
 

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useReducer } from 'react';
 import { useState } from 'react';
 import { useMutation } from 'react-query';
 import { Request } from '../utils/requests';
@@ -7,6 +7,7 @@ import Snackbar from '@mui/material/Snackbar';
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
 import Markdown from './Markdown';
 import { useNavigate } from 'react-router-dom';
+import { StateInterface, ActionInterface, ActionKindInterface } from '../types/ReducerInterface';
 
 interface FormValuesType {
   title: string;
@@ -20,13 +21,29 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(props,
 });
 
 const AdminNewArticle = () => {
-  const [open, setOpen] = useState(false);
-  const [openError, setOpenError] = useState(false);
-  const [value, setValue] = useState<string | undefined>('Supports markdown. Yay!');
-  const [image, setImage] = useState<File | null>(null);
+  const reducer = (state: StateInterface, action: ActionInterface) => {
+    switch (action.type) {
+      case ActionKindInterface.toggleSuccessMessage:
+        return { ...state, open: !state.open };
+      case ActionKindInterface.toggleErrorMessage:
+        return { ...state, openError: !state.openError };
+      case ActionKindInterface.setImage:
+        return { ...state, image: action.payload };
+      case ActionKindInterface.setFileURL:
+        return { ...state, fileDataURL: action.payload };
+      default:
+        throw new Error();
+    }
+  };
 
-  // Image preview handling;
-  const [fileDataURL, setFileDataURL] = useState<string | ArrayBuffer | null | undefined>(null);
+  const [state, dispatch] = useReducer(reducer, {
+    open: false,
+    openError: false,
+    image: null,
+    fileDataURL: null
+  });
+
+  const [value, setValue] = useState<string | undefined>('Supports markdown. Yay!');
 
   const nav = useNavigate();
 
@@ -41,36 +58,32 @@ const AdminNewArticle = () => {
     return Request.postArticle(data);
   };
 
-  const {
-    mutate: submitArticle,
-    error: submitError,
-    data
-  } = useMutation(postArticle, {
+  const { mutate: submitArticle, error: submitError } = useMutation(postArticle, {
     onSuccess(data) {
-      setOpen(true);
-      setImage(null);
-      setFileDataURL(null);
+      dispatch({ type: ActionKindInterface.toggleSuccessMessage });
+      dispatch({ type: ActionKindInterface.setImage, payload: null });
+      dispatch({ type: ActionKindInterface.setFileURL, payload: null });
       reset();
       setValue('');
-      nav(`/myarticles/edit/${data.articleId}`);
+      // nav(`/myarticles/edit/${data.articleId}`);
     },
     onError() {
-      setOpenError(true);
+      dispatch({ type: ActionKindInterface.toggleErrorMessage });
     }
   });
 
   useEffect(() => {
     let fileReader: FileReader;
     let isCancel = false;
-    if (image) {
+    if (state.image) {
       fileReader = new FileReader();
       fileReader.onload = (e: ProgressEvent<FileReader>) => {
         const result: string | ArrayBuffer | null | undefined = e.target?.result;
         if (e.target && !isCancel) {
-          setFileDataURL(result);
+          dispatch({ type: ActionKindInterface.setFileURL, payload: result });
         }
       };
-      fileReader.readAsDataURL(image);
+      fileReader.readAsDataURL(state.image);
     }
     return () => {
       isCancel = true;
@@ -78,7 +91,7 @@ const AdminNewArticle = () => {
         fileReader.abort();
       }
     };
-  }, [image]);
+  }, [state.image]);
 
   return (
     <section className="w-10/12 mx-auto mt-16">
@@ -86,10 +99,9 @@ const AdminNewArticle = () => {
         action=""
         className="w-7/12"
         onSubmit={handleSubmit(async (data) => {
-          if (image) {
-            const response = await Request.postImage(image);
+          if (state.image) {
+            const response = await Request.postImage(state.image);
             submitArticle({ ...data, content: value || '', imageId: response[0].imageId });
-            // return <Redirect to="/" />
           } else {
             submitArticle({ ...data, content: value || '' });
           }
@@ -137,9 +149,9 @@ const AdminNewArticle = () => {
 
         {/* Image upload */}
         <label className="block mb-2">Featured image</label>
-        {fileDataURL ? (
+        {state.fileDataURL ? (
           <p className="img-preview-wrapper mb-3">
-            {<img className="w-28" src={fileDataURL.toString()} alt="preview" />}
+            {<img className="w-28" src={state.fileDataURL.toString()} alt="preview" />}
           </p>
         ) : null}
         <label htmlFor="image" className="bg-gray-500 text-white p-2 rounded">
@@ -152,7 +164,7 @@ const AdminNewArticle = () => {
           id="image"
           formEncType="multipart/form-data"
           onChange={(e) => {
-            setImage(e.target.files?.[0] || null);
+            dispatch({ type: ActionKindInterface.setImage, payload: e.target.files?.[0] || null });
           }}
         />
 
@@ -162,38 +174,31 @@ const AdminNewArticle = () => {
 
         <Snackbar
           anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-          open={open}
+          open={submitError ? state.openError : state.open}
           autoHideDuration={2000}
           onClose={(e, reason) => {
             if (reason === 'clickaway') {
               return;
             }
 
-            setOpen(false);
+            if (submitError) {
+              dispatch({ type: ActionKindInterface.toggleErrorMessage });
+            } else {
+              dispatch({ type: ActionKindInterface.toggleSuccessMessage });
+            }
           }}>
-          <Alert severity="success" sx={{ width: '100%' }}>
-            Your article was successfully published!
-          </Alert>
-        </Snackbar>
-        <>
-          {submitError && (
-            <Snackbar
-              anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-              open={openError}
-              autoHideDuration={2000}
-              onClose={(e, reason) => {
-                if (reason === 'clickaway') {
-                  return;
-                }
-
-                setOpenError(false);
-              }}>
-              {/* Possible improvements: Notify about precise type of an error */}
-              <Alert severity="error" sx={{ width: '100%' }}>
-                Something went wrong. Please try again later
-              </Alert>
-            </Snackbar>
+          {submitError ? (
+            <Alert severity="error" sx={{ width: '100%' }}>
+              Something went wrong. Please try again later
+            </Alert>
+          ) : (
+            <Alert severity="success" sx={{ width: '100%' }}>
+              Your article was successfully published!
+            </Alert>
           )}
+        </Snackbar>
+
+        <>
           <Markdown value={value} setValue={setValue} />
         </>
       </form>

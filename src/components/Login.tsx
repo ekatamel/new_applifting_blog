@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useReducer } from 'react';
 import { useMutation } from 'react-query';
 import { LoginType } from '../types/LoginType';
 import { useNavigate } from 'react-router-dom';
@@ -7,7 +7,35 @@ import { useContext } from 'react';
 import { UserContext } from '../utils/UserContext';
 import { UserContextInterface } from '../types/UserInterface';
 
+interface StateInterface {
+  email: string | null;
+  password: string | null;
+}
+
+enum ActionTypeInterface {
+  setPassword = 'setPassword',
+  setEmail = 'setEmail'
+}
+
+interface ActionInterface {
+  type: ActionTypeInterface;
+  payload?: any;
+}
+
 export default function Login() {
+  const reducer = (state: StateInterface, action: ActionInterface): StateInterface => {
+    switch (action.type) {
+      case ActionTypeInterface.setEmail:
+        return { ...state, email: action.payload };
+      case ActionTypeInterface.setPassword:
+        return { ...state, password: action.payload };
+      default:
+        throw new Error();
+    }
+  };
+
+  const [state, dispatch] = useReducer(reducer, { email: '', password: '' });
+
   const [email, setEmail] = useState<string | null>(null);
   const [password, setPassword] = useState<string | null>(null);
   const { user, setUser } = useContext<UserContextInterface>(UserContext);
@@ -51,7 +79,7 @@ export default function Login() {
           id="email"
           required
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-            setEmail(e.target.value);
+            dispatch({ type: ActionTypeInterface.setEmail, payload: e.target.value });
           }}
         />
         <label htmlFor="password" className="block mb-2">
@@ -63,7 +91,7 @@ export default function Login() {
           className="border-2 border-gray-200 w-full mb-4 h-9 rounded-sm px-2"
           required
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-            setPassword(e.target.value);
+            dispatch({ type: ActionTypeInterface.setPassword, payload: e.target.value });
           }}
         />
         <button className="bg-blue-500 text-white p-2 rounded-sm ml-auto block mt-3">Log In</button>

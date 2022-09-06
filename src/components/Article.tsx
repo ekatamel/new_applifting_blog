@@ -4,6 +4,7 @@ import { TenantType } from '../types/TenantInterace';
 import Moment from 'react-moment';
 import { Request } from '../utils/requests';
 import Image from './Image';
+import styles from '../styles/Module.module.scss';
 
 import { FC } from 'react';
 
@@ -25,11 +26,7 @@ const Article: FC<ArticleProps> = ({ article }) => {
 
   return (
     <div className="flex gap-7">
-      <div>
-        {articleData && (
-          <Image imageId={articleData.imageId} className="w-72 h-60 bg-cover bg-center" />
-        )}
-      </div>
+      <div>{articleData && <Image imageId={articleData.imageId} className={styles.image} />}</div>
       <div className="w-4/12 flex flex-col justify-around">
         <h2 className="text-2xl font-bold mb-4">{article.title}</h2>
         <div className="flex gap-4">

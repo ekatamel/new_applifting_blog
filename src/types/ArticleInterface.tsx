@@ -14,7 +14,7 @@ export interface ArticleDetailType {
   comments: CommentType[];
   content: string;
   createdAt: Date;
-  imageId: string;
+  imageId?: string;
   lastUpdatedAt: Date;
   perex: string;
   title: string;
@@ -31,6 +31,6 @@ export interface EditArticleType {
   articleId?: string;
   title?: string;
   perex?: string;
-  imageId: string;
+  imageId?: string;
   content: string;
 }
