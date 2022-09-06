@@ -40,9 +40,21 @@ jobs:
         uses: icrawl/action-tsc@v1
 
       # Run ESLint
-      - name: Run ESLInt
-        run: lint . --ext .js,.jsx,.ts,.tsx
+      # - name: Run ESLInt
+      #   run: npx eslint . --ext .tsx
 
       # Runs a build
       # - name: Run a build
       #   run: npm run build
+
+  deploy:
+    name: Deploy website on Hostinger
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy website
+        uses: SamKirkland/FTP-Deploy-Action@4.3.2
+        with:
+          server: ${{ secrets.SERVER }}
+          username: ${{ secrets.USERNAME}}
+          password: ${{ secrets.PASSWORD}}
+          server_dir: ${{ secrets.SERVER_DIR}}
