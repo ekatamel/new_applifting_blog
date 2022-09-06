@@ -39,16 +39,10 @@ jobs:
       - name: Run TypeScript check
         uses: icrawl/action-tsc@v1
 
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
-
-      # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
-        run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
+      # Run ESLint
+      - name: Run ESLInt
+        run: eslint . --ext .js,.jsx,.ts,.tsx
 
       # Runs a build
-      - name: Run a build
-        run: npm run build
+      # - name: Run a build
+      #   run: npm run build
