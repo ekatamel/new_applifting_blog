@@ -1,21 +1,25 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import UserProvider from './components/UserProvider';
+import './i18n';
 
 const queryClient = new QueryClient();
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
+
 root.render(
   <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <UserProvider>
-        <App />
-      </UserProvider>
-    </QueryClientProvider>
+    <Suspense fallback={<div>Loading...</div>}>
+      <QueryClientProvider client={queryClient}>
+        <UserProvider>
+          <App />
+        </UserProvider>
+      </QueryClientProvider>
+    </Suspense>
   </React.StrictMode>
 );
 

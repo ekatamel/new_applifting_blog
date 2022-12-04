@@ -22,7 +22,7 @@ export class Request {
 
   static loadTenant = async () => {
     const response = await axiosInstance.get<TenantType>(
-      `/tenants/f82f3833-b927-4104-9efe-042cfe93bb35`
+      `/tenants/9f422521-4f2e-4cd9-bd25-6cc796f9d4bf`
     );
     return response.data;
   };
@@ -74,8 +74,8 @@ export class Request {
       { image: image },
       {
         headers: {
-          'X-API-KEY': '5c946f9a-b317-4dd2-a3f3-e188fe5ddb30',
-          Authorization: 'e6c7b2c3-30c3-47b3-a831-ce277841cda7',
+          'X-API-KEY': '2280ed69-0200-4cbd-8cb1-aa7bfa735644',
+          Authorization: '72cb065e-68c3-44ee-820a-4716d27abb25',
           'Content-Type': 'multipart/form-data'
         }
       }
@@ -100,6 +100,11 @@ export class Request {
     const response = await axiosInstance.get(`images/${imageId}`, {
       responseType: 'blob'
     });
+    return response;
+  };
+
+  static syncToggle = async (userId: string) => {
+    const response = await axiosInstance.put(`/admin/users/${userId}/sync`);
     return response;
   };
 }

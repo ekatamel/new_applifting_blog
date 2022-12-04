@@ -41,12 +41,12 @@ jobs:
         uses: icrawl/action-tsc@v1
 
       # Run ESLint
-      # - name: Run ESLInt
-      #   run: npx eslint . --ext .tsx
+      - name: Run ESLInt
+        run: npx eslint . --ext .tsx
 
       # Runs a build
-      # - name: Run a build
-      #   run: npm run build
+      - name: Run a build
+        run: npm run build
 
   deploy:
     name: Deploy website on Hostinger
